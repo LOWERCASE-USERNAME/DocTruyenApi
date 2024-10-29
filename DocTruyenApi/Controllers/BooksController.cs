@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DocTruyenApi.Models;
+using DocTruyenApi.DTOs;
+using AutoMapper;
 
 namespace DocTruyenApi.Controllers
 {
@@ -14,22 +16,23 @@ namespace DocTruyenApi.Controllers
     public class BooksController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-
-        public BooksController(ApplicationDbContext context)
+        private readonly IMapper _mapper;
+        public BooksController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
-        {
-            return await _context.Books.ToListAsync();
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks(int pageNumber = 0, int pageSize = 10)
         {
             return await _context.Books.Skip(pageNumber * pageSize).Take(pageSize).ToListAsync();
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        {
+            return await _context.Books.ToListAsync();
         }
 
         [HttpGet("search")]
@@ -55,14 +58,21 @@ namespace DocTruyenApi.Controllers
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutBook(int id, BookDTO dto)
         {
-            if (id != book.BookId)
+            Book book = await _context.Books.FindAsync(dto.BookId);
+
+            if (id != dto.BookId || book == null)
             {
                 return BadRequest();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
+            book.BookName = dto.BookName ?? book.BookName;
+            book.Description = dto.Description ?? book.Description;
+            book.Status = dto.Status ?? book.Status;
+            book.PictureLink = dto.PictureLink ?? book.PictureLink;
+
+            _context.Books.Update(book);
 
             try
             {
@@ -86,8 +96,11 @@ namespace DocTruyenApi.Controllers
         // POST: api/Books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<Book>> PostBook(BookDTO dto)
         {
+            Book book = _mapper.Map<Book>(dto);
+            book.UploadTime = DateTime.UtcNow;
+
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
 

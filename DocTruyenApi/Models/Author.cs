@@ -10,6 +10,7 @@ namespace DocTruyenApi.Models
         [MaxLength(255)]
         public string AuthorName { get; set; }
         public string Description { get; set; }
+        public string PictureLink { get; set; }
         public virtual IEnumerable<Book> Books { get;set; }
     }
 }
