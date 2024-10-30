@@ -11,6 +11,8 @@ namespace DocTruyenApi
             CreateMap<Book, BookDTO>();
             CreateMap<ChapterDTO, Chapter>();
             CreateMap<Chapter, ChapterDTO>();
+            CreateMap<Account, AccountDTO>();
+            CreateMap<AccountDTO, Account>();
         }
 
     }

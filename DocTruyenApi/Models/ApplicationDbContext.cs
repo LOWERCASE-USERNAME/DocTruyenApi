@@ -46,6 +46,13 @@ namespace DocTruyenApi.Models
                 new Genre { GenreId = 12, GenreName = "Linh Dị"},    
                 new Genre { GenreId = 13, GenreName = "Ngôn Tình"}    
             );
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { RoleId = 1, RoleName = "User" },
+                new Role { RoleId = 2, RoleName = "Creator" },
+                new Role { RoleId = 3, RoleName = "Manager" },
+                new Role { RoleId = 4, RoleName = "Admin" }
+            );
         }
     }
 }

@@ -51,7 +51,7 @@ namespace DocTruyenApi.Controllers
         {
             Chapter chapter = await _context.Chapters.FindAsync(dto.ChapterId);
 
-            if (id != chapter.ChapterId || chapter == null)
+            if (id != dto.ChapterId || chapter == null)
             {
                 return BadRequest();
             }
