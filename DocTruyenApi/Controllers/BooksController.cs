@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using DocTruyenApi.Models;
 using DocTruyenApi.DTOs;
 using AutoMapper;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace DocTruyenApi.Controllers
 {
@@ -24,15 +26,43 @@ namespace DocTruyenApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks(int pageNumber = 0, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<ResponseBookDTO>>> GetBooks(int pageNumber = 0, int pageSize = 10)
         {
-            return await _context.Books.Skip(pageNumber * pageSize).Take(pageSize).ToListAsync();
+            return await _context.Books
+                .Select(b => new ResponseBookDTO()
+                {
+                    BookId = b.BookId,
+                    BookName = b.BookName,
+                    Description = b.Description,
+                    PictureLink = b.PictureLink,
+                    Status = b.Status,
+                    UploadTime = b.UploadTime,
+                    Authors = b.Authors.Select(a => new AuthorDTO(a.AuthorId, a.AuthorName, a.Description, a.PictureLink)),
+                    Chapters = b.Chapters.Select(c => new ChapterDTO(c.ChapterId, c.ChapterName, c.ChapterOrder)),
+                    Genres = b.Genres.Select(g => new GenreDTO(g.GenreId, g.GenreName))
+                })
+                .AsNoTracking()
+                .Skip(pageNumber * pageSize).Take(pageSize).ToListAsync();
         }
 
         [HttpGet("all")]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<ResponseBookDTO>>> GetBooks()
         {
-            return await _context.Books.ToListAsync();
+            return await _context.Books
+                .Select(b => new ResponseBookDTO()
+                {
+                    BookId = b.BookId,
+                    BookName = b.BookName,
+                    Description = b.Description,
+                    PictureLink = b.PictureLink,
+                    Status = b.Status,
+                    UploadTime = b.UploadTime,
+                    Authors = b.Authors.Select(a => new AuthorDTO(a.AuthorId, a.AuthorName, a.Description, a.PictureLink)),
+                    Chapters = b.Chapters.Select(c => new ChapterDTO(c.ChapterId, c.ChapterName, c.ChapterOrder)),
+                    Genres = b.Genres.Select(g => new GenreDTO(g.GenreId, g.GenreName))
+                })
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         [HttpGet("search")]
@@ -126,6 +156,11 @@ namespace DocTruyenApi.Controllers
         private bool BookExists(int id)
         {
             return _context.Books.Any(e => e.BookId == id);
+        }
+
+        private DateTime FormatUploadTime(DateTime dateTime)
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(dateTime, TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"));
         }
     }
 }
