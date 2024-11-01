@@ -14,5 +14,7 @@ namespace DocTruyenApi.Models
         [ForeignKey("Book")]
         public int BookId { get; set; }
         public virtual Book Book { get; set; }
+        //public virtual int? NextChapterId { get; set; }
+        //public virtual int? PrevChapterId { get; set; }
     }
 }
