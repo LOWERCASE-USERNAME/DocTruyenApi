@@ -26,9 +26,10 @@ namespace DocTruyenApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ResponseBookDTO>>> GetBooks(int pageNumber = 0, int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<ResponseBookDTO>>> GetBooks(int pageNumber = 0, int pageSize = 10, string? genre = null)
         {
             return await _context.Books
+                .Where(b => string.IsNullOrEmpty(genre) || b.Genres.Select(g => g.GenreName.ToLower()).Contains(genre.ToLower()))
                 .Select(b => new ResponseBookDTO()
                 {
                     BookId = b.BookId,
