@@ -9,7 +9,7 @@ using DocTruyenApi.Models;
 using DocTruyenApi.DTOs;
 using AutoMapper;
 using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+
 
 namespace DocTruyenApi.Controllers
 {
@@ -42,7 +42,7 @@ namespace DocTruyenApi.Controllers
             {
                 return BadRequest("Email not existed");
             }
-            if (HashPassword(email).Equals(account.PasswordHash))
+            if (BCrypt.Net.BCrypt.Verify(password, account.PasswordHash))
             {
                 var accountDTO = _mapper.Map<AccountDTO>(account);
                 return accountDTO;
