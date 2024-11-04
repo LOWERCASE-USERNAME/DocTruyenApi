@@ -9,6 +9,7 @@ using DocTruyenApi.Models;
 using DocTruyenApi.DTOs;
 using AutoMapper;
 using Microsoft.CodeAnalysis.Scripting;
+using DocTruyenApi.Utils;
 
 
 namespace DocTruyenApi.Controllers
@@ -109,7 +110,17 @@ namespace DocTruyenApi.Controllers
             Account account = _mapper.Map<Account>(dto);
             account.PasswordHash = HashPassword(dto.Password);
 
-            _context.Accounts.Add(account);
+            await _context.Accounts.AddAsync(account);
+            await _context.SaveChangesAsync();
+
+            User user = new User()
+            {
+                AccountId = account.AccountId,
+                UserName = UsernameGenerator.GenerateUsername(),
+                Dob = DateTime.Now,
+                Gender = true
+            };
+            await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetAccount", new { id = account.AccountId }, account);

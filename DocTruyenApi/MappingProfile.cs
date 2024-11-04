@@ -13,6 +13,8 @@ namespace DocTruyenApi
             CreateMap<Chapter, ChapterDTO>();
             CreateMap<Account, AccountDTO>();
             CreateMap<AccountDTO, Account>();
+            CreateMap<User, UserDTO>();
+            CreateMap<UserDTO, User>();
         }
 
     }

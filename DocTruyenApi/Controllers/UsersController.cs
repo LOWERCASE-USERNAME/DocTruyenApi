@@ -45,7 +45,7 @@ namespace DocTruyenApi.Controllers
             return _mapper.Map<UserDTO>(user);
         }
 
-        [HttpGet("{accountId}")]
+        [HttpGet("get-by-account-id/{accountId}")]
         public async Task<ActionResult<UserDTO>> GetUserByAccountId(int accountId)
         {
             var user = await _context.Users.Where(u => u.AccountId == accountId).FirstOrDefaultAsync();
