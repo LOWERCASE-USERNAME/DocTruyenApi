@@ -32,16 +32,33 @@ namespace DocTruyenApi.Controllers
 
         // GET: api/Chapters/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Chapter>> GetChapter(int id)
+        public async Task<ActionResult<object>> GetChapter(int id)
         {
-            var chapter = await _context.Chapters.FindAsync(id);
+            var chapter = await _context.Chapters
+                .Where(c => c.ChapterId == id)
+                .Select(c => new
+                {
+                    Chapter = c,
+                    NextChapter = _context.Chapters.FirstOrDefault(cn => cn.ChapterOrder == c.ChapterOrder + 1 && cn.BookId == c.BookId),
+                    PrevChapter = _context.Chapters.FirstOrDefault(cp => cp.ChapterOrder == c.ChapterOrder - 1 && cp.BookId == c.BookId)
+                })
+                .FirstOrDefaultAsync();
 
             if (chapter == null)
             {
                 return NotFound();
             }
 
-            return chapter;
+            return new
+            {
+                chapter.Chapter.ChapterId,
+                chapter.Chapter.ChapterName,
+                chapter.Chapter.Content,
+                chapter.Chapter.BookId,
+                chapter.Chapter.ChapterOrder,
+                NextChapterId = chapter.NextChapter?.ChapterId ?? -1,
+                PrevChapterId = chapter.PrevChapter?.ChapterId ?? -1
+            };
         }
 
         // PUT: api/Chapters/5
