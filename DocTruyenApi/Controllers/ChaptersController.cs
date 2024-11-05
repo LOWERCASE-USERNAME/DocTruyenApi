@@ -63,14 +63,14 @@ namespace DocTruyenApi.Controllers
 
         // PUT: api/Chapters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutChapter(int id, ChapterDTO dto)
+        [HttpPut]
+        public async Task<IActionResult> PutChapter(ChapterDTO dto)
         {
-            Chapter chapter = await _context.Chapters.FindAsync(dto.ChapterId);
+            Chapter? chapter = await _context.Chapters.FindAsync(dto.ChapterId);
 
-            if (id != dto.ChapterId || chapter == null)
+            if (chapter == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             chapter.ChapterName = dto.ChapterName ?? chapter.ChapterName;
@@ -78,24 +78,9 @@ namespace DocTruyenApi.Controllers
             chapter.Content = dto.Content ?? chapter.Content;
 
             _context.Chapters.Update(chapter);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ChapterExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok(chapter);
         }
 
         // POST: api/Chapters
@@ -120,7 +105,7 @@ namespace DocTruyenApi.Controllers
             {
                 return NotFound();
             }
-
+            
             _context.Chapters.Remove(chapter);
             await _context.SaveChangesAsync();
 

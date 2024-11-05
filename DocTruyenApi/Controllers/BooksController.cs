@@ -66,6 +66,26 @@ namespace DocTruyenApi.Controllers
                 .ToListAsync();
         }
 
+        [HttpGet("get-by-writer-account-id/{accountId}")]
+        public async Task<ActionResult<IEnumerable<ResponseBookDTO>>> GetBooksByWriterAccountId(int accountId)
+        {
+            return await _context.Books
+                .Select(b => new ResponseBookDTO()
+                {
+                    BookId = b.BookId,
+                    BookName = b.BookName,
+                    Description = b.Description,
+                    PictureLink = b.PictureLink,
+                    Status = b.Status,
+                    UploadTime = b.UploadTime,
+                    Authors = b.Authors.Select(a => new AuthorDTO(a.AuthorId, a.AuthorName, a.Description, a.PictureLink)),
+                    Chapters = b.Chapters.Select(c => new ChapterDTO(c.ChapterId, c.ChapterName, c.ChapterOrder)),
+                    Genres = b.Genres.Select(g => new GenreDTO(g.GenreId, g.GenreName))
+                })
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks(string query)
         {
@@ -74,9 +94,20 @@ namespace DocTruyenApi.Controllers
 
         // GET: api/Books/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<ResponseBookDTO>> GetBook(int id)
         {
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Books.Where(b => b.BookId == id).Select(b => new ResponseBookDTO()
+            {
+                BookId = b.BookId,
+                BookName = b.BookName,
+                Description = b.Description,
+                PictureLink = b.PictureLink,
+                Status = b.Status,
+                UploadTime = b.UploadTime,
+                Authors = b.Authors.Select(a => new AuthorDTO(a.AuthorId, a.AuthorName, a.Description, a.PictureLink)),
+                Chapters = b.Chapters.Select(c => new ChapterDTO(c.ChapterId, c.ChapterName, c.ChapterOrder)),
+                Genres = b.Genres.Select(g => new GenreDTO(g.GenreId, g.GenreName))
+            }).FirstOrDefaultAsync();
 
             if (book == null)
             {
@@ -131,6 +162,19 @@ namespace DocTruyenApi.Controllers
         {
             Book book = _mapper.Map<Book>(dto);
             book.UploadTime = DateTime.UtcNow;
+
+            var trackedGenres = new List<Genre>();
+
+            foreach (var genreDto in dto.Genres)
+            {
+                var genre = await _context.Genres
+                    .FirstOrDefaultAsync(g => g.GenreId == genreDto.GenreId);
+
+                if(genre != null)
+                    trackedGenres.Add(genre);  // Add genre to book's Genres collection
+            }
+
+            book.Genres = trackedGenres;
 
             _context.Books.Add(book);
             await _context.SaveChangesAsync();

@@ -1,4 +1,5 @@
-﻿using DocTruyenApi.Models;
+﻿using DocTruyenApi.DTOs;
+using DocTruyenApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ namespace DocTruyenApi.Controllers
             var readBooks = _context.ReadHistories
                 .Where(rh => rh.User.AccountId == accountId)
                 .Include(rh=> rh.Book)
-                .Include(rh=> rh.Chapter)
+                .Include(rh => rh.Chapter)
                 //.Select(rh=> new
                 //{
                 //    //BookId = rh.BookId,
