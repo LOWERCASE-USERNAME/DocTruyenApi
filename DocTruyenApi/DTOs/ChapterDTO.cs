@@ -12,6 +12,10 @@ namespace DocTruyenApi.DTOs
         public string? Content { get; set; }
         public int BookId { get; set; }
 
+        public ChapterDTO()
+        {
+        }
+
         public ChapterDTO(int? chapterId, string? chapterName, int? chapterOrder)
         {
             ChapterId = chapterId;

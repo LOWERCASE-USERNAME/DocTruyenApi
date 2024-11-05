@@ -7,9 +7,13 @@ namespace DocTruyenApi
     {
         public MappingProfile()
         {
-            CreateMap<BookDTO, Book>();
+            CreateMap<Genre, GenreDTO>();
+            CreateMap<GenreDTO, Genre>();
+            CreateMap<BookDTO, Book>()
+                .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.Genres));
             CreateMap<Book, BookDTO>();
-            CreateMap<ChapterDTO, Chapter>();
+            CreateMap<ChapterDTO, Chapter>()
+                .ForMember(dest => dest.ChapterId, opt => opt.Ignore());
             CreateMap<Chapter, ChapterDTO>();
             CreateMap<Account, AccountDTO>();
             CreateMap<AccountDTO, Account>();
