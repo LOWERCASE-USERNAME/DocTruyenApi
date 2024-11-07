@@ -28,7 +28,7 @@ namespace DocTruyenApi.Migrations
                 column: "ChapterId",
                 principalTable: "Chapters",
                 principalColumn: "ChapterId",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.NoAction); //XEM VAN DE GI NEU DE CASCADE BI LOI
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

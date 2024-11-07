@@ -69,7 +69,14 @@ namespace DocTruyenApi.Controllers
         [HttpGet("get-by-writer-account-id/{accountId}")]
         public async Task<ActionResult<IEnumerable<ResponseBookDTO>>> GetBooksByWriterAccountId(int accountId)
         {
+            User? user = await _context.Users.Where(a => a.AccountId == accountId).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             return await _context.Books
+                .Where(b => b.WriterId != null && b.WriterId == user.UserId)
                 .Select(b => new ResponseBookDTO()
                 {
                     BookId = b.BookId,
@@ -160,9 +167,16 @@ namespace DocTruyenApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Book>> PostBook(BookDTO dto)
         {
+            //WriterId dang nhan la accountId can bien no thanh UserId
+            User? user = await _context.Users.Where(a => a.AccountId == dto.WriterId).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             Book book = _mapper.Map<Book>(dto);
             book.UploadTime = DateTime.UtcNow;
-
+            book.WriterId = user.UserId;
             var trackedGenres = new List<Genre>();
 
             foreach (var genreDto in dto.Genres)

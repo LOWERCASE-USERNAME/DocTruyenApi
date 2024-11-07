@@ -15,6 +15,9 @@ namespace DocTruyenApi.Models
         public DateTime UploadTime { get; set; }
         public string PictureLink { get; set; }
         public BookStatus Status { get; set; }
+        [ForeignKey("User")]
+        public int? WriterId { get; set; }
+        public virtual User User { get;set; }
         public virtual IEnumerable<Genre> Genres { get; set; }
         public virtual IEnumerable<Author> Authors { get;set; }
         public virtual IEnumerable<Chapter> Chapters { get; set; }

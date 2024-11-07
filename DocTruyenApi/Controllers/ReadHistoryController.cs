@@ -25,22 +25,6 @@ namespace DocTruyenApi.Controllers
                 .Where(rh => rh.User.AccountId == accountId)
                 .Include(rh=> rh.Book)
                 .Include(rh => rh.Chapter)
-                //.Select(rh=> new
-                //{
-                //    //BookId = rh.BookId,
-                //    //BookName = rh.Book.BookName,
-                //    //BookDescription = rh.Book.Description,
-                //    //BookPicTure = rh.Book.PictureLink,
-                //    //BookUploadTime = rh.Book.UploadTime,
-                //    //BookStatus = rh.Book.Status,
-                //    Chapter = rh.Chapter == null ? null : new
-                //    {
-                //        ChapterId = rh.Chapter.ChapterId,
-                //        ChapterName = rh.Chapter.ChapterName,
-                //        ChapterOrder = rh.Chapter.ChapterOrder,
-                //    }
-
-                //})
                 .ToList();
             return Ok(readBooks);
         }
@@ -76,5 +60,16 @@ namespace DocTruyenApi.Controllers
             return Ok("Read history updated successfully.");
         }
 
+        //[HttpDelete("{readHistoryId}")]
+        //public async Task<IActionResult> DeleteReadHistory(int readHistoryId)
+        //{
+        //    ReadHistory? readHistory = await _context.ReadHistories
+        //        .FindAsync(readHistoryId);
+
+        //    if (readHistory == null) return NotFound();
+        //    _context.ReadHistories.Remove(readHistory);
+        //    await _context.SaveChangesAsync();
+        //    return Ok();
+        //}
     }
 }
